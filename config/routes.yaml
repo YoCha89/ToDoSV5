@@ -1,0 +1,7 @@
+controllers:
+    resource: ../src/Controller/
+    type: attribute
+
+tasks:
+    path: /tasks
+    controller: App\Controller\TaskController::listAction
