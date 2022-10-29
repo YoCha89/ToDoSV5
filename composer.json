@@ -23,7 +23,8 @@
         "symfony/security-bundle": "6.1.*",
         "symfony/twig-bundle": "6.1.*",
         "symfony/validator": "6.1.*",
-        "symfony/yaml": "6.1.*"
+        "symfony/yaml": "6.1.*",
+        "symfonycasts/verify-email-bundle": "^1.12"
     },
     "config": {
         "allow-plugins": {
@@ -78,6 +79,8 @@
         }
     },
     "require-dev": {
-        "symfony/maker-bundle": "^1.46"
+        "symfony/maker-bundle": "^1.46",
+        "symfony/stopwatch": "6.1.*",
+        "symfony/web-profiler-bundle": "6.1.*"
     }
 }
