@@ -3,44 +3,35 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\DBAL\Types\Types;
 use App\Repository\TaskRepository;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Doctrine\ORM\Mapping\Annotation;
+use Doctrine\ORM\Mapping\GeneratedValue;
 
 
 
-/**
-* @ORM\Entity(repositoryClass=TaskRepository::class)
-*/
+#[ORM\Entity(repositoryClass: TaskRepository::class)]
 class Task
 {
-    /**
-     * @ORM\Column(type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
-
-    /**
-     * @ORM\Column(type="datetime")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id;
+    
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private $createdAt;
 
-    /**
-     * @ORM\Column(type="string")
-     * @Assert\NotBlank(message="Vous devez saisir un titre.")
-     */
+    #[ORM\Column(type: Types::STRING)]
     private $title;
 
-    /**
-     * @ORM\Column(type="text")
-     * @Assert\NotBlank(message="Vous devez saisir du contenu.")
-     */
+
+    #[Assert\NotBlank(message:"Vous devez saisir du contenu.")]
+    #[ORM\Column(type: Types::TEXT)]
     private $content;
 
-    /**
-     * @ORM\Column(type="boolean")
-     */
+    #[ORM\Column(type: Types::BOOLEAN)]
     private $isDone;
 
     public function __construct()
