@@ -19,6 +19,7 @@ class TaskController extends AbstractController
         
     }
 
+    //Access to tasks
     /**
      * @Route("/tasks", name="task_list")
      */
@@ -33,6 +34,7 @@ class TaskController extends AbstractController
      */
     public function createAction(Request $request)
     {
+
         $task = new Task();
         $form = $this->createForm(TaskType::class, $task);
 
@@ -54,22 +56,24 @@ class TaskController extends AbstractController
             return $this->redirectToRoute('task_list');
         }
 
-        return $this->render('task/create.html.twig', ['form' => $form->createView()]);
+        return $this->render('task/create.html.twig', ['form' => $form->createView()]);            
+        
+
     }
 
-    //update tasks and checks property constraints
+    //update tasks and checks property constraints. Admin has all the rights, non admin users must own the task.
     /**
      * @Route("/tasks/{id}/edit", name="task_edit")
      */
     public function editAction(Task $task, Request $request)
     {
-        if($task->getUser()->getUsername() != 'anonymous'){
+        if($task->getUser()->getUsername() != 'anonymous' && $task->getUser() == $this->getUser()){
             $go = '';
         }elseif($this->isGranted('ROLE_ADMIN')){
             $go = '';
         }
 
-        if(isset($true)){
+        if(isset($go)){
             $form = $this->createForm(TaskType::class, $task);
 
             $form->handleRequest($request);
@@ -87,25 +91,24 @@ class TaskController extends AbstractController
                 'task' => $task,
             ]);        
         }else{
-            $this->addFlash('error', 'Seul un administrateur peut éditer une tâche anonyme.');
+            $this->addFlash('error', 'Seul l\'utilisateur dédié ou un administrateur peut éditer une tâche.');
         }
     
     }
 
-    //delete tasks and checks property constraints
+    //toggle tasks executionand checks property constraints.  Admin has all the rights, non admin users must own the task.
     /**
      * @Route("/tasks/{id}/toggle", name="task_toggle")
      */
     public function toggleTaskAction(Task $task)
     {
-
-        if($task->getUser()->getUsername() != 'anonymous'){
-            $go = true;
+        if($task->getUser()->getUsername() != 'anonymous' && $task->getUser() == $this->getUser()){
+            $go = '';
         }elseif($this->isGranted('ROLE_ADMIN')){
-            $go = true;
+            $go = '';
         }
 
-        if(isset($true)){
+        if(isset($go)){
 
             $task->toggle(!$task->isDone());
             $this->em->flush();
@@ -115,19 +118,31 @@ class TaskController extends AbstractController
             return $this->redirectToRoute('task_list');
     
         }else{
-            $this->addFlash('error', 'Seul un administrateur peut éditer une tâche anonyme.');
-        }}
+            $this->addFlash('error', 'Seul l\'utilisateur dédié ou un administrateur peut éditer une tâche.');
+        }
+    }
 
+    //delete tasks and checks property constraints.  Admin has all the rights, non admin users must own the task.
     /**
      * @Route("/tasks/{id}/delete", name="task_delete")
      */
     public function deleteTaskAction(Task $task)
     {
-        $this->em->remove($task);
-        $this->em->flush();
+        if($task->getUser()->getUsername() != 'anonymous' && $task->getUser() == $this->getUser()){
+            $go = '';
+        }elseif($this->isGranted('ROLE_ADMIN')){
+            $go = '';
+        }
 
-        $this->addFlash('success', 'La tâche a bien été supprimée.');
+        if(isset($go)){
+            $this->em->remove($task);
+            $this->em->flush();
 
-        return $this->redirectToRoute('task_list');
+            $this->addFlash('success', 'La tâche a bien été supprimée.');
+
+            return $this->redirectToRoute('task_list');
+        }else{
+            $this->addFlash('error', 'Seul l\'utilisateur dédié ou un administrateur peut supprimer une tâche.');
+        } 
     }
 }

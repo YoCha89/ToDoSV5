@@ -12,16 +12,24 @@
                     <h4 class="pull-right">
                         {% if task.isDone %}<span class="glyphicon glyphicon-ok"></span>{% else %}<span class="glyphicon glyphicon-remove"></span>{% endif %}
                     </h4>
-                    <h4><a href="{{ path('task_edit', {'id' : task.id }) }}">{{ task.title }}</a></h4>
+                    <h4>
+                    {% if is_granted('ROLE_ADMIN') or task.user == app.user%}
+                        <a href="{{ path('task_edit', {'id' : task.id }) }}">
+                    {% endif %}
+                    
+                    {{ task.title }}
+                    {% if is_granted('ROLE_ADMIN') or task.user == app.user%}
+                        </a>
+                    {% endif %}
+                    </h4>
+
                     <p style="color:#bacfdf; margin-bottom:8px">{{ task.user.email }}</p>
                     <p>{{ task.content }}</p>
                 </div>
 
-                {% if task.user.username == 'anonymous'%}
-                    {% if is_granted('ROLE_ADMIN') %}
-                        {% set go = true %}
-                    {% endif %}
-                {% else %}
+                {% if task.user.username != 'anonymous' and task.user == app.user%}
+                    {% set go = true %}
+                {% elseif is_granted('ROLE_ADMIN') %}
                         {% set go = true %}
                 {% endif %}
 
@@ -36,12 +44,13 @@
                             <button class="btn btn-danger btn-sm pull-right">Supprimer</button>
                         </form>
                     </div>
-                    {% endif %}
+                {% endif %}
             </div>
         </div>
         {% else %}
             <div class="alert alert-warning" role="alert">
-                Il n'y a pas encore de tâche enregistrée. <a href="{{ path('task_create') }}" class="btn btn-warning pull-right">Créer une tâche</a>
+                Il n'y a pas encore de tâche enregistrée. 
+                <a href="{{ path('task_create') }}" class="btn btn-warning pull-right">Créer une tâche</a>
             </div>
         {% endfor %}
     </div>
