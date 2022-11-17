@@ -9,6 +9,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class UserController extends AbstractController
 {
@@ -27,6 +28,7 @@ class UserController extends AbstractController
             return $this->render('user/list.html.twig', ['users' => $this->repo->findAll()]);
         }else{
             $this->addFlash('error', 'Seul un administrateur peut accéder aux utilisateurs.');
+            RedirectResponse($this->urlGenerator->generate('task_list'));
         } 
         
     }
@@ -58,6 +60,7 @@ class UserController extends AbstractController
             return $this->render('user/create.html.twig', ['form' => $form->createView()]);            
         }else{
             $this->addFlash('error', 'Seul un administrateur peut créer un utilisateur.');
+            RedirectResponse($this->urlGenerator->generate('task_list'));
         } 
 
     }
@@ -87,6 +90,7 @@ class UserController extends AbstractController
             return $this->render('user/edit.html.twig', ['form' => $form->createView(), 'user' => $user]);            
         }else{
             $this->addFlash('error', 'Seul un administrateur mettre à jour un utilisateur.');
+            RedirectResponse($this->urlGenerator->generate('task_list'));
         } 
 
     }
@@ -95,7 +99,7 @@ class UserController extends AbstractController
     /**
      * @Route("/users/{id}/delete", name=users_delete")
      */
-    public function deleteUserAction(User $user)
+   /* public function deleteUserAction(User $user)
     {
         if($this->isGranted('ROLE_ADMIN')){
             $this->em->remove($task);
@@ -107,5 +111,5 @@ class UserController extends AbstractController
         }else{
             $this->addFlash('error', 'Seul un administrateur peut supprimer un utilisateur.');
         } 
-    }
+    }*/
 }
