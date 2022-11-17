@@ -10,6 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use App\Repository\TaskRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 
 class TaskController extends AbstractController
@@ -92,6 +93,7 @@ class TaskController extends AbstractController
             ]);        
         }else{
             $this->addFlash('error', 'Seul l\'utilisateur dédié ou un administrateur peut éditer une tâche.');
+            RedirectResponse($this->urlGenerator->generate('task_list'));
         }
     
     }
@@ -119,6 +121,7 @@ class TaskController extends AbstractController
     
         }else{
             $this->addFlash('error', 'Seul l\'utilisateur dédié ou un administrateur peut éditer une tâche.');
+            RedirectResponse($this->urlGenerator->generate('task_list'));
         }
     }
 
@@ -126,7 +129,7 @@ class TaskController extends AbstractController
     /**
      * @Route("/tasks/{id}/delete", name="task_delete")
      */
-    public function deleteTaskAction(Task $task)
+    /*public function deleteTaskAction(Task $task)
     {
         if($task->getUser()->getUsername() != 'anonymous' && $task->getUser() == $this->getUser()){
             $go = '';
@@ -144,5 +147,5 @@ class TaskController extends AbstractController
         }else{
             $this->addFlash('error', 'Seul l\'utilisateur dédié ou un administrateur peut supprimer une tâche.');
         } 
-    }
+    }*/
 }
