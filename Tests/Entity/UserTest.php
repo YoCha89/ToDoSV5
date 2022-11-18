@@ -11,12 +11,8 @@ use App\Form\UserType;
 
 class UserTest extends TestCase
 {
-    public function __construct(private UserRepository $repo, private EntityManagerInterface $em)
-    {
 
-    }
-
-    public function testListAction()
+   /* public function testListAction()
     {
         
     }
@@ -46,24 +42,24 @@ class UserTest extends TestCase
             '/^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/'  
           )
         );
-    }
+    }*/
 
     /**
      * @dataProvider constraintProvider
      */
-    public function notBlankValidator(){
+   /* public function notBlankValidator(){
 
-    }
+    }*/
 
     /**
      * @dataProvider constraintProvider
      */
-    public function notNullValidator(){
+  /*  public function notNullValidator(){
         
-    }
+    }*/
 
 
-    public function constraintProvider()
+    /*public function constraintProvider()
     {
         return [
             ['mail', null, 'null'],
@@ -71,15 +67,15 @@ class UserTest extends TestCase
             ['mail', '', 'notBlank'],
             ['username', '', 'notBlank'],
         ];
-    }
+    }*/
 
 
     /**
      * @dataProvider editProvider
      */
-    public function testEditAction()
+    /*  public function testEditAction()
     {
-        $id = $a;
+      $id = $a;
 
         $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $randString = '';
@@ -116,9 +112,9 @@ class UserTest extends TestCase
             [2, 'email'],
             [2, 'username'],
         ];
-    }
+    }*/
 
-    public function adminRestriction(){
+   /* public function adminRestriction(){
         
-    }
+    }*/
 }
