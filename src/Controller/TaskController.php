@@ -129,7 +129,7 @@ class TaskController extends AbstractController
     /**
      * @Route("/tasks/{id}/delete", name="task_delete")
      */
-    /*public function deleteTaskAction(Task $task)
+    public function deleteTaskAction(Task $task)
     {
         if($task->getUser()->getUsername() != 'anonymous' && $task->getUser() == $this->getUser()){
             $go = '';
@@ -147,5 +147,5 @@ class TaskController extends AbstractController
         }else{
             $this->addFlash('error', 'Seul l\'utilisateur dédié ou un administrateur peut supprimer une tâche.');
         } 
-    }*/
+    }
 }

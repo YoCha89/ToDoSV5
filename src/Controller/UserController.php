@@ -97,9 +97,9 @@ class UserController extends AbstractController
 
     //delete tasks and checks property constraints.  Admin has all the rights, non admin users must own the task.
     /**
-     * @Route("/users/{id}/delete", name=users_delete")
+     * @Route("/users/{id}/delete", name=user_delete")
      */
-   /* public function deleteUserAction(User $user)
+ /*   public function deleteUserAction(User $user)
     {
         if($this->isGranted('ROLE_ADMIN')){
             $this->em->remove($task);
