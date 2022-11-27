@@ -8,9 +8,26 @@ use App\Repository\UserRepository;
 class UserControllerTest extends WebTestCase
 {
 
+
+//Test response code of list action
+    public function testListActionSuccess() {
+        $client = static::createClient();
+        $user = $this->getUser('admin');
+        $client->loginUser($user);
+
+        $crawler = $client->request('GET', '/users');
+
+        $this->assertResponseIsSuccessful();
+
+    }
+
+//Test DOM result of list action
     public function testListAction() {
         $client = static::createClient();
-        $crawler = $client->request('GET', '/');
+        $user = $this->getUser('admin');
+        $client->loginUser($user);
+
+        $crawler = $client->request('GET', '/users');
 
         $userRepository = static::getContainer()->get(UserRepository::class);
         
@@ -23,75 +40,145 @@ class UserControllerTest extends WebTestCase
             $userList,
                $crawler->filter('html:contains(<th scope="row">)')->count()
         );
+    }
+
+
+    //Test response code of edit action
+    public function testEditActionSuccess()
+    {
+        $client = static::createClient();
+        $user = $this->getUser('admin');
+        $client->loginUser($user);
+
+        $userRepository = static::getContainer()->get(UserRepository::class);
+
+        $user = $userRepository->findOneBy(array('email'=>'modify'));
+
+        $crawler = $client->request('POST', '/users/'.$user->getId().'/edit');
+        $crawler = $client->submitForm('Modifier', [
+            'user_form[email]' => 'modify@fake.com',
+            'user_form[username]' => 'modify',
+        ]);
         $this->assertResponseIsSuccessful();
 
     }
 
- /*   public function testCreateAction()
+
+    //Test DB result of edit action
+    public function testEditActionDb()
     {
         $client = static::createClient();
-        $crawler = $client->request('GET', '/');
+        $user = $this->getUser('admin');
+        $client->loginUser($user);
 
         $userRepository = static::getContainer()->get(UserRepository::class);
 
-        $this->assertResponseIsSuccessful();
+        $randString = $this->randString( $userRepository);
 
-    }*/
+        $user = $userRepository->findOneBy(array('username'=>'editUser'));
 
+        $crawler = $client->request('POST', '/users/'.$user->getId().'/edit');
+        $crawler = $client->submitForm('Modifier', [
+            'user_form[email]' => $randString,
+            'user_form[username]' => 'editUser',
+        ]);
+
+        $userTest = $userRepository->findOneBy(array('email'=> $randString));
+
+        $this->assertNotNull($userTest);
+    }
+
+
+    //Test DOM result of edit action
     public function testEditAction()
     {
         $client = static::createClient();
+        $user = $this->getUser('admin');
+        $client->loginUser($user);
 
         $userRepository = static::getContainer()->get(UserRepository::class);
 
-        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        $randString = '';
+        $randString = $this->randString( $userRepository);
 
-        for ($i = 0; $i < 6; $i++) {
-            $randString = $characters[rand(0, strlen($characters))];
-        }
+        $user = $userRepository->findOneBy(array('username'=>'editUser'));
 
-        $user = $userRepository->findOneBy(array('email'=>'Test email'));
-
-        $crawler = $client->request('GET', '/users/'.$user->getId().'/edit');
+        $crawler = $client->request('POST', '/users/'.$user->getId().'/edit');
         $crawler = $client->submitForm('Modifier', [
-            'user_form[email]' => $randString . '@fake.com',
-            'user_form[username]' => 'Testname',
+            'user_form[email]' => $randString,
+            'user_form[username]' => 'editUser',
         ]);
 
         $this->assertSame(
             1,
                $crawler->filter($randString)->count()
         );
-        $this->assertResponseIsSuccessful();
-
     }
 
-    public function testDeleteAction()
-    {          
+    //Test for user manipulation admin restrictions : list
+    public function adminRestrictionList(){
         $client = static::createClient();
+        $user = $this->getUser('user');
+        $client->loginUser($user);
 
-        $userRepository = static::getContainer()->get(UserRepository::class); 
-
-        $user = $taskRepository->findOneBy(array('content'=>'Test content'));
-
-       $crawler = $client->request('GET', '/users/'. $user->getId() .'/delete');
-
-
-        $this->assertResponseIsSuccessful();
+        $crawler = $client->request('GET', '/users');
+        
         $this->assertSame(
-            0,
-               $crawler->filter('Test content')->count()
+            1,
+               $crawler->filter('<div class="alert alert-danger" role="alert">')->count()
+        );        
+    }
+
+    //Test for user manipulation admin restrictions : edit
+    public function adminRestrictionEdit(){
+        $client = static::createClient();
+        $user = $this->getUser('user');
+        $client->loginUser($user);
+
+        $userRepository = static::getContainer()->get(UserRepository::class);
+
+        $user = $userRepository->findOneBy(array('email'=>'modify'));
+
+        $crawler = $client->request('POST', '/users/'.$user->getId().'/edit');
+        $crawler = $client->submitForm('Modifier', [
+            'user_form[email]' => 'modify@fake.com',
+            'user_form[username]' => 'modify',
+        ]);      
+
+        $this->assertSame(
+            1,
+               $crawler->filter('<div class="alert alert-danger" role="alert">')->count()
         );
     }
 
-/*
-    public function mailValidator(){
+    //Function providing random strings the does not macth any DB existing entry for test data
+    protected function randString($repo){
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $randString = '';
+        $user = 'notNull';
 
+        while($user != null){
+            for ($i = 0; $i < 6; $i++) {
+                $randString = $characters[rand(0, strlen($characters))] . '@fake.com';
+            }     
+
+            $user = $repo->findOneBy(array('email' => $randString))       
+        }
+
+        retrun $randstring;
     }
-*/
 
-    public function adminRestriction(){
-        
+    protected function getUser($role){
+
+        $userRepository = static::$container->get(UserRepository::class);
+
+        if($role == 'admin'){
+            $testUser = $userRepository->findOneByEmail('admin@test.com');
+        }elseif($role == 'notOwner'){
+            $testUser = $userRepository->findOneByEmail('user@test.com');
+        }else{
+            $testUser = $userRepository->findOneByEmail('user@test.com');
+        }
+
+        return $testUser;
     }
 }
