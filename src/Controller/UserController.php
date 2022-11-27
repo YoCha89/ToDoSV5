@@ -92,24 +92,5 @@ class UserController extends AbstractController
             $this->addFlash('error', 'Seul un administrateur mettre à jour un utilisateur.');
             RedirectResponse($this->urlGenerator->generate('task_list'));
         } 
-
     }
-
-    //delete tasks and checks property constraints.  Admin has all the rights, non admin users must own the task.
-    /**
-     * @Route("/users/{id}/delete", name=user_delete")
-     */
- /*   public function deleteUserAction(User $user)
-    {
-        if($this->isGranted('ROLE_ADMIN')){
-            $this->em->remove($task);
-            $this->em->flush();
-
-            $this->addFlash('success', 'La tâche a bien été supprimée.');
-
-            return $this->redirectToRoute('task_list');
-        }else{
-            $this->addFlash('error', 'Seul un administrateur peut supprimer un utilisateur.');
-        } 
-    }*/
 }
