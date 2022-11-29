@@ -23,9 +23,9 @@ class Task
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private $createdAt;
 
+    #[Assert\NotBlank(message:"Vous devez saisir du contenu.")]
     #[ORM\Column(type: Types::STRING)]
     private $title;
-
 
     #[Assert\NotBlank(message:"Vous devez saisir du contenu.")]
     #[ORM\Column(type: Types::TEXT)]
