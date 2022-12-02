@@ -23,7 +23,9 @@ class UserControllerTest extends WebTestCase
 
 //Test DOM result of list action
     public function testListAction() {
+
         $client = static::createClient();
+        self::bootKernel();
         $user = $this->getUser('admin');
         $client->loginUser($user);
 
@@ -38,7 +40,7 @@ class UserControllerTest extends WebTestCase
 
         $this->assertSame(
             $userList,
-               $crawler->filter('html:contains(<th scope="row">)')->count()
+               $crawler->filter('<th scope="row">')->count()
         );
     }
 
@@ -46,7 +48,9 @@ class UserControllerTest extends WebTestCase
     //Test response code of edit action
     public function testEditActionSuccess()
     {
+
         $client = static::createClient();
+        self::bootKernel();
         $user = $this->getUser('admin');
         $client->loginUser($user);
 
@@ -56,8 +60,8 @@ class UserControllerTest extends WebTestCase
 
         $crawler = $client->request('POST', '/users/'.$user->getId().'/edit');
         $crawler = $client->submitForm('Modifier', [
-            'user_form[email]' => 'modify@fake.com',
-            'user_form[username]' => 'modify',
+            'form[email]' => 'modify@fake.com',
+            'form[username]' => 'modify',
         ]);
         $this->assertResponseIsSuccessful();
 
@@ -67,7 +71,9 @@ class UserControllerTest extends WebTestCase
     //Test DB result of edit action
     public function testEditActionDb()
     {
+
         $client = static::createClient();
+        self::bootKernel();
         $user = $this->getUser('admin');
         $client->loginUser($user);
 
@@ -79,8 +85,8 @@ class UserControllerTest extends WebTestCase
 
         $crawler = $client->request('POST', '/users/'.$user->getId().'/edit');
         $crawler = $client->submitForm('Modifier', [
-            'user_form[email]' => $randString,
-            'user_form[username]' => 'editUser',
+            'form[email]' => $randString,
+            'form[username]' => 'editUser',
         ]);
 
         $userTest = $userRepository->findOneBy(array('email'=> $randString));
@@ -92,7 +98,9 @@ class UserControllerTest extends WebTestCase
     //Test DOM result of edit action
     public function testEditAction()
     {
+
         $client = static::createClient();
+        self::bootKernel();
         $user = $this->getUser('admin');
         $client->loginUser($user);
 
@@ -104,8 +112,8 @@ class UserControllerTest extends WebTestCase
 
         $crawler = $client->request('POST', '/users/'.$user->getId().'/edit');
         $crawler = $client->submitForm('Modifier', [
-            'user_form[email]' => $randString,
-            'user_form[username]' => 'editUser',
+            'form[email]' => $randString,
+            'form[username]' => 'editUser',
         ]);
 
         $this->assertSame(
@@ -130,6 +138,7 @@ class UserControllerTest extends WebTestCase
 
     //Test for user manipulation admin restrictions : edit
     public function adminRestrictionEdit(){
+
         $client = static::createClient();
         $user = $this->getUser('user');
         $client->loginUser($user);
@@ -140,8 +149,8 @@ class UserControllerTest extends WebTestCase
 
         $crawler = $client->request('POST', '/users/'.$user->getId().'/edit');
         $crawler = $client->submitForm('Modifier', [
-            'user_form[email]' => 'modify@fake.com',
-            'user_form[username]' => 'modify',
+            'form[email]' => 'modify@fake.com',
+            'form[username]' => 'modify',
         ]);      
 
         $this->assertSame(
@@ -161,15 +170,16 @@ class UserControllerTest extends WebTestCase
                 $randString = $characters[rand(0, strlen($characters))] . '@fake.com';
             }     
 
-            $user = $repo->findOneBy(array('email' => $randString))       
+            $user = $repo->findOneBy(array('email' => $randString));     
         }
 
-        retrun $randstring;
+        return $randString;
     }
 
     protected function getUser($role){
 
-        $userRepository = static::$container->get(UserRepository::class);
+        self::bootKernel();
+        $userRepository = static::getContainer()->get(UserRepository::class);
 
         if($role == 'admin'){
             $testUser = $userRepository->findOneByEmail('admin@test.com');
