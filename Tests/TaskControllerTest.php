@@ -18,9 +18,11 @@ class TaskControllerTest extends WebTestCase
 
     //Test DOM result of list action
     public function testListAction() {
+
         $client = static::createClient();
         $crawler = $client->request('GET', '/tasks');
 
+        self::bootKernel();
         $taskRepository = static::getContainer()->get(TaskRepository::class);
 
         $taskList = $taskRepository->createQueryBuilder('t')
@@ -30,7 +32,7 @@ class TaskControllerTest extends WebTestCase
 
         $this->assertSame(
             $taskList,
-               $crawler->filter('html:contains(<h4 class="pull-right">)')->count()
+               $crawler->filter('<h4 class="pull-right">')->count()
         );
     }
 
@@ -41,8 +43,8 @@ class TaskControllerTest extends WebTestCase
         $crawler = $client->request('POST', '/tasks/create');
 
         $crawler = $client->submitForm('Ajouter', [
-            'task_form[title]' => 'TestTitle',
-            'task_form[content]' => 'Test content',
+            'form[title]' => 'TestTitle',
+            'form[content]' => 'Test content',
         ]);
 
 
@@ -52,7 +54,9 @@ class TaskControllerTest extends WebTestCase
     //Test DB result of create action
     public function testCreateActionDB()
     {          
+
         $client = static::createClient();
+        self::bootKernel();
         $crawler = $client->request('POST', '/tasks/create');
         $user = $this->getUser('user');
         $client->loginUser($user);
@@ -63,8 +67,8 @@ class TaskControllerTest extends WebTestCase
         $newId = $maxId+1;
 
         $crawler = $client->submitForm('Ajouter', [
-            'task_form[title]' => 'Test title',
-            'task_form[content]' => 'Test content',
+            'form[title]' => 'Test title',
+            'form[content]' => 'Test content',
         ]);
 
         $testId = $taskRepository->findBy(array('id'>=0), array('id'=>'DESC'), 1);
@@ -75,7 +79,9 @@ class TaskControllerTest extends WebTestCase
     //Test DOM result of create action
     public function testCreateAction()
     {          
+
         $client = static::createClient();
+        self::bootKernel();
         $crawler = $client->request('POST', '/tasks/create');
         $user = $this->getUser('user');
         $client->loginUser($user);
@@ -83,8 +89,8 @@ class TaskControllerTest extends WebTestCase
         $taskRepository = static::getContainer()->get(TaskRepository::class);  
 
         $crawler = $client->submitForm('Ajouter', [
-            'task_form[title]' => 'TestTitle',
-            'task_form[content]' => 'Test content',
+            'form[title]' => 'TestTitle',
+            'form[content]' => 'Test content',
         ]);
 
         $testId = $taskRepository->findBy(array('id'>=0), array('id'=>'DESC'), 1);
@@ -99,7 +105,9 @@ class TaskControllerTest extends WebTestCase
     //Test response code edit action 
     public function testEditActionSuccess()
     {   
+
         $client = static::createClient();
+        self::bootKernel();
         $user = $this->getUser('user');
         $client->loginUser($user);
 
@@ -110,8 +118,8 @@ class TaskControllerTest extends WebTestCase
         $crawler = $client->request('POST', '/tasks/'.$task->getId().'/edit');
 
         $crawler = $client->submitForm('Ajouter', [
-            'task_form[title]' => 'Test edit',
-            'task_form[content]' => 'Test content',
+            'form[title]' => 'Test edit',
+            'form[content]' => 'Test content',
         ]);
 
         $this->assertResponseIsSuccessful();
@@ -121,7 +129,9 @@ class TaskControllerTest extends WebTestCase
     //Test DB result of edit action
     public function testEditActionDB()
     {   
+
         $client = static::createClient();
+        self::bootKernel();
         $user = $this->getUser('user');
         $client->loginUser($user);
 
@@ -134,8 +144,8 @@ class TaskControllerTest extends WebTestCase
         $randString = $this->randString($taskRepository, 'content');
 
         $crawler = $client->submitForm('Ajouter', [
-            'task_form[title]' => 'Test edit',
-            'task_form[content]' => $randString,
+            'form[title]' => 'Test edit',
+            'form[content]' => $randString,
         ]);
 
 
@@ -147,7 +157,9 @@ class TaskControllerTest extends WebTestCase
     //Test DOM result of edit action
     public function testEditAction()
     {   
+
         $client = static::createClient();
+        self::bootKernel();
         $user = $this->getUser('user');
         $client->loginUser($user);
 
@@ -160,8 +172,8 @@ class TaskControllerTest extends WebTestCase
         $randString = $this->randString($taskRepository, 'title');
 
         $crawler = $client->submitForm('Ajouter', [
-            'task_form[title]' => 'Test edit',
-            'task_form[content]' => 'Test content',
+            'form[title]' => 'Test edit',
+            'form[content]' => 'Test content',
         ]);
 
         $this->assertSame(
@@ -175,6 +187,7 @@ class TaskControllerTest extends WebTestCase
     {
         
         $client = static::createClient();
+        self::bootKernel();
         $user = $this->getUser('user');
         $client->loginUser($user);
 
@@ -190,7 +203,9 @@ class TaskControllerTest extends WebTestCase
     //Test DB result toggle action
     public function testToggleTaskActionDB()
     {
+
         $client = static::createClient();
+        self::bootKernel();
         $user = $this->getUser('user');
         $client->loginUser($user);
 
@@ -216,6 +231,7 @@ class TaskControllerTest extends WebTestCase
     {
         
         $client = static::createClient();
+        self::bootKernel();
         $user = $this->getUser('user');
         $client->loginUser($user);
 
@@ -255,8 +271,10 @@ class TaskControllerTest extends WebTestCase
 
     //Test property violation of edit action
     public function propertyViolationEdit(){
+
         //connection profil pas valide
         $client = static::createClient();
+        self::bootKernel();
         $user = $this->getUser('notOwner');
         $client->loginUser($user);
 
@@ -265,8 +283,8 @@ class TaskControllerTest extends WebTestCase
 
         $crawler = $client->request('GET', '/tasks/'.$task->getId().'/edit');
         $crawler = $client->submitForm('Modifier', [
-            'task_form[title]' => 'Test Ownership',
-            'task_form[content]' => 'You don\'t own this',
+            'form[title]' => 'Test Ownership',
+            'form[content]' => 'You don\'t own this',
         ]);
 
         $this->assertSame(
@@ -277,8 +295,10 @@ class TaskControllerTest extends WebTestCase
 
     //Test property violation of edit action for admin role
     public function adminViolationEdit(){
+
         //connection profil pas valide
         $client = static::createClient();
+        self::bootKernel();
         $user = $this->getUser('user');
         $client->loginUser($user);
 
@@ -287,8 +307,8 @@ class TaskControllerTest extends WebTestCase
 
         $crawler = $client->request('GET', '/tasks/'.$task->getId().'/edit');
         $crawler = $client->submitForm('Modifier', [
-            'task_form[title]' => 'Anonymous',
-            'task_form[content]' => 'Test Anonymous',
+            'form[title]' => 'Anonymous',
+            'form[content]' => 'Test Anonymous',
         ]);
 
         $this->assertSame(
@@ -299,11 +319,12 @@ class TaskControllerTest extends WebTestCase
 
     //Test property violation of toggle action
     public function propertyViolationToggle(){
+
         //connection profil pas valide
         $client = static::createClient();
+        self::bootKernel();
         $user = $this->getUser('notOwner');
         $client->loginUser($user);
-
 
         $taskRepository = static::getContainer()->get(TaskRepository::class);
         $task = $taskRepository->findOneBy(array('content'=>'Test Ownership'));
@@ -318,8 +339,10 @@ class TaskControllerTest extends WebTestCase
 
     //Test property violation of toggle action for admin role
     public function adminViolationToggle(){
+
         //connection profil pas valide
         $client = static::createClient();
+        self::bootKernel();
         $user = $this->getUser('user');
         $client->loginUser($user);
 
@@ -349,12 +372,16 @@ class TaskControllerTest extends WebTestCase
         }
 
 
-        retrun $randstring;
+        return $randString;
     }
 
     protected function getUser($role){
 
-        $userRepository = static::$container->get(UserRepository::class);
+        self::bootKernel();
+
+        $container = static::getContainer();
+
+        $userRepository = $container->get(UserRepository::class);
 
         if($role == 'admin'){
             $testUser = $userRepository->findOneByEmail('admin@test.com');

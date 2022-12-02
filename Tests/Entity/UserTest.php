@@ -3,21 +3,24 @@
 namespace App\Tests\Entity;
 
 use App\Entity\User;
-use PHPUnit\Framework\KernelTestCase;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class UserTest extends KernelTestCase
 {
-    public function getEntity(): Task {
-        return (new User())
-            ->setEmail('email@fake.com')
-            ->setUsername('username');
+    public function getEntity(): User {
+        $user = new User(); 
+
+        $user->setEmail('email@fake.com');
+        $user->setUsername('username');
+
+        return $user;
     }
 
     //Test that a User that should be valid does not throw erros
     public function assertHasErrors(User $user, int $number = 0){
 
         self::bootKernel();
-        $errors = self::$container->get('validator')->validate($user);
+        $errors = static::getContainer()->get('validator')->validate($user);
         $messages = [];
 
         /** @var ConstraintViolation $error */

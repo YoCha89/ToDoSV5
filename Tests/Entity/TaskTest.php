@@ -3,14 +3,17 @@
 namespace App\Tests\Entity;
 
 use App\Entity\Task;
-use PHPUnit\Framework\KernelTestCase;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class TaskTest extends KernelTestCase
 {
     public function getEntity(): Task {
-        return (new Task())
-            ->setTitle('Title of task')
-            ->setContent('Description of task');
+        $task = new Task();
+        
+        $task->setTitle('Title of task');
+        $task->setContent('Description of task');
+
+        return $task;
     }
 
     //Test that a Task that should be valid does not throw erros
