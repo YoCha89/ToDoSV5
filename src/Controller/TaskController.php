@@ -93,7 +93,8 @@ class TaskController extends AbstractController
             ]);        
         }else{
             $this->addFlash('error', 'Seul l\'utilisateur dédié ou un administrateur peut éditer une tâche.');
-            RedirectResponse($this->urlGenerator->generate('task_list'));
+
+            return $this->redirectToRoute('task_list');
         }
     
     }
@@ -121,7 +122,8 @@ class TaskController extends AbstractController
     
         }else{
             $this->addFlash('error', 'Seul l\'utilisateur dédié ou un administrateur peut éditer une tâche.');
-            RedirectResponse($this->urlGenerator->generate('task_list'));
+
+            return $this->redirectToRoute('task_list');
         }
     }
 

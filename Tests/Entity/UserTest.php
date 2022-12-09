@@ -20,15 +20,21 @@ class UserTest extends KernelTestCase
     public function assertHasErrors(User $user, int $number = 0){
 
         self::bootKernel();
-        $errors = static::getContainer()->get('validator')->validate($user);
+        $container = static::getContainer();
+        $errors = $container->get('validator')->validate($user);
         $messages = [];
 
-        /** @var ConstraintViolation $error */
         foreach($errors as $error) {
             $messages[] = $error->getPropertyPath() . ' => ' . $error->getMessage();
         }
 
         $this->assertCount($number, $errors, implode(', ', $messages));
+    }
+
+    //Test that a User that should be valid does not throw erros
+    public function testValidEntity()
+    {
+        $this->assertHasErrors($this->getEntity(), 0);
     }
 
     // Test that an error is thrown by the validator if we set a blank username

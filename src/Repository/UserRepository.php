@@ -56,6 +56,16 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->add($user, true);
     }
 
+    // Used for the taskList, to display users but not the anonymous entity
+    public function findAllButAnonymous(){
+        return $this->createQueryBuilder('u')
+        ->andWhere('u.email != :anonymous')
+        ->setParameter(':anonymous', 'anonymous')
+        ->getQuery()
+        ->getResult();
+    }
+
+
 //    /**
 //     * @return User[] Returns an array of User objects
 //     */
