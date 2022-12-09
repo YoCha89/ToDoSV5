@@ -8,7 +8,6 @@ use App\Repository\UserRepository;
 class UserControllerTest extends WebTestCase
 {
 
-
 //Test response code of list action
     public function testListActionSuccess() {
         $client = static::createClient();
@@ -25,7 +24,7 @@ class UserControllerTest extends WebTestCase
     public function testListAction() {
 
         $client = static::createClient();
-        self::bootKernel();
+        
         $user = $this->getUser('admin');
         $client->loginUser($user);
 
@@ -33,15 +32,15 @@ class UserControllerTest extends WebTestCase
 
         $userRepository = static::getContainer()->get(UserRepository::class);
         
-        $userList = $userRepository->createQueryBuilder('t')
-            ->select('count(t.id)')
+        $userList = $userRepository->createQueryBuilder('u')
+            ->select('count(u.id)')
+            ->andwhere('u.email != :email')
+            ->setParameter(':email', 'anonymous')
             ->getQuery()
             ->getResult();
 
-        $this->assertSame(
-            $userList,
-               $crawler->filter('<th scope="row">')->count()
-        );
+        //adapter balise CSS
+        $this->assertCount($userList[0][1], $crawler->filter('.btn-success'));
     }
 
 
@@ -50,7 +49,7 @@ class UserControllerTest extends WebTestCase
     {
 
         $client = static::createClient();
-        self::bootKernel();
+        
         $user = $this->getUser('admin');
         $client->loginUser($user);
 
@@ -60,8 +59,8 @@ class UserControllerTest extends WebTestCase
 
         $crawler = $client->request('POST', '/users/'.$user->getId().'/edit');
         $crawler = $client->submitForm('Modifier', [
-            'form[email]' => 'modify@fake.com',
-            'form[username]' => 'modify',
+            'user[email]' => 'modify@fake.com',
+            'user[username]' => 'modify',
         ]);
         $this->assertResponseIsSuccessful();
 
@@ -73,7 +72,7 @@ class UserControllerTest extends WebTestCase
     {
 
         $client = static::createClient();
-        self::bootKernel();
+        
         $user = $this->getUser('admin');
         $client->loginUser($user);
 
@@ -85,8 +84,8 @@ class UserControllerTest extends WebTestCase
 
         $crawler = $client->request('POST', '/users/'.$user->getId().'/edit');
         $crawler = $client->submitForm('Modifier', [
-            'form[email]' => $randString,
-            'form[username]' => 'editUser',
+            'user[email]' => $randString,
+            'user[username]' => 'editUser',
         ]);
 
         $userTest = $userRepository->findOneBy(array('email'=> $randString));
@@ -100,7 +99,7 @@ class UserControllerTest extends WebTestCase
     {
 
         $client = static::createClient();
-        self::bootKernel();
+        
         $user = $this->getUser('admin');
         $client->loginUser($user);
 
@@ -112,32 +111,26 @@ class UserControllerTest extends WebTestCase
 
         $crawler = $client->request('POST', '/users/'.$user->getId().'/edit');
         $crawler = $client->submitForm('Modifier', [
-            'form[email]' => $randString,
-            'form[username]' => 'editUser',
+            'user[email]' => $randString,
+            'user[username]' => 'editUser',
         ]);
 
-        $this->assertSame(
-            1,
-               $crawler->filter($randString)->count()
-        );
+        $this->assertCount(1, $crawler->filter($randString));
     }
 
     //Test for user manipulation admin restrictions : list
-    public function adminRestrictionList(){
+    public function testAdminRestrictionList(){
         $client = static::createClient();
         $user = $this->getUser('user');
         $client->loginUser($user);
 
         $crawler = $client->request('GET', '/users');
-        
-        $this->assertSame(
-            1,
-               $crawler->filter('<div class="alert alert-danger" role="alert">')->count()
-        );        
+         
+        $this->assertCount(1, $crawler->filter('.alert-danger'));     
     }
 
     //Test for user manipulation admin restrictions : edit
-    public function adminRestrictionEdit(){
+    public function testAdminRestrictionEdit(){
 
         $client = static::createClient();
         $user = $this->getUser('user');
@@ -149,14 +142,11 @@ class UserControllerTest extends WebTestCase
 
         $crawler = $client->request('POST', '/users/'.$user->getId().'/edit');
         $crawler = $client->submitForm('Modifier', [
-            'form[email]' => 'modify@fake.com',
-            'form[username]' => 'modify',
+            'user[email]' => 'modify@fake.com',
+            'user[username]' => 'modify',
         ]);      
 
-        $this->assertSame(
-            1,
-               $crawler->filter('<div class="alert alert-danger" role="alert">')->count()
-        );
+        $this->assertCount(1, $crawler->filter('.alert-danger'));
     }
 
     //Function providing random strings the does not macth any DB existing entry for test data
@@ -178,7 +168,7 @@ class UserControllerTest extends WebTestCase
 
     protected function getUser($role){
 
-        self::bootKernel();
+        
         $userRepository = static::getContainer()->get(UserRepository::class);
 
         if($role == 'admin'){

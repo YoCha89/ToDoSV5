@@ -16,19 +16,25 @@ class TaskTest extends KernelTestCase
         return $task;
     }
 
-    //Test that a Task that should be valid does not throw erros
-    public function assertHasErrors(Task $task, int $number = 0){
+    //Called by lour different test functions to validate entity or checking the right error
+    public function assertHasErrors(Task $task, int $number = 0) {
 
         self::bootKernel();
-        $errors = self::$container->get('validator')->validate($task);
+        $container = static::getContainer();
+        $errors = $container->get('validator')->validate($task);
         $messages = [];
 
-        /** @var ConstraintViolation $error */
         foreach($errors as $error) {
             $messages[] = $error->getPropertyPath() . ' => ' . $error->getMessage();
         }
 
         $this->assertCount($number, $errors, implode(', ', $messages));
+    }
+
+    //Test that a Task that should be valid does not throw erros
+    public function testValidEntity()
+    {
+        $this->assertHasErrors($this->getEntity(), 0);
     }
 
     // Test that an error is thrown by the validator if we set a blank title
