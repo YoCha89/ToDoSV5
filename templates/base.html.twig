@@ -34,14 +34,14 @@
                 </div>
             </div>
         </nav>
-
         <!-- Page Content -->
         <div class="container">
-            <div class="row">
+            <div class="row" style="margin-bottom: 4px;">
                 <a href="{{ path('app_register') }}" class="btn btn-primary">Créer un utilisateur</a>
 
                 {% if app.user %}
-                <a href="{{ path('app_logout') }}" class="pull-right btn btn-danger">Se déconnecter</a>
+                <a href="{{ path('app_logout') }}" class="pull-right btn btn-danger">{{app.user.email}} : Déconnexion</a>
+                <!-- <p>{{app.user.email}}</p> -->
                 {% endif %}
 
                 {% if not app.user and 'login' != app.request.attributes.get('_route') %}

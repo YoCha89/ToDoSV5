@@ -4,12 +4,13 @@ namespace App\Tests;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use App\Repository\UserRepository;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\InvalidArgumentException;
 
-class UserControllerTest extends WebTestCase
-{
+class UserControllerTest extends WebTestCase {
 
 //Test response code of list action
-    public function testListActionSuccess() {
+    public function testListUserActionSuccess() {
         $client = static::createClient();
         $user = $this->getUser('admin');
         $client->loginUser($user);
@@ -17,11 +18,10 @@ class UserControllerTest extends WebTestCase
         $crawler = $client->request('GET', '/users');
 
         $this->assertResponseIsSuccessful();
-
     }
 
 //Test DOM result of list action
-    public function testListAction() {
+    public function testListUserAction() {
 
         $client = static::createClient();
         
@@ -45,22 +45,21 @@ class UserControllerTest extends WebTestCase
 
 
     //Test response code of edit action
-    public function testEditActionSuccess()
+    public function testEditUserActionSuccess()
     {
 
         $client = static::createClient();
-        
         $user = $this->getUser('admin');
         $client->loginUser($user);
 
         $userRepository = static::getContainer()->get(UserRepository::class);
 
-        $user = $userRepository->findOneBy(array('email'=>'modify'));
+        $user = $userRepository->findOneBy(array('email'=>'edit@test.com'));
 
         $crawler = $client->request('POST', '/users/'.$user->getId().'/edit');
         $crawler = $client->submitForm('Modifier', [
-            'user[email]' => 'modify@fake.com',
-            'user[username]' => 'modify',
+            'user[email]' => 'edit@test.com',
+            'user[username]' => 'editUser',
         ]);
         $this->assertResponseIsSuccessful();
 
@@ -68,7 +67,7 @@ class UserControllerTest extends WebTestCase
 
 
     //Test DB result of edit action
-    public function testEditActionDb()
+    public function testEditUserActionDb()
     {
 
         $client = static::createClient();
@@ -78,24 +77,27 @@ class UserControllerTest extends WebTestCase
 
         $userRepository = static::getContainer()->get(UserRepository::class);
 
-        $randString = $this->randString( $userRepository);
+        $randString = $this->randString($userRepository);
 
-        $user = $userRepository->findOneBy(array('username'=>'editUser'));
+        $user = $userRepository->findOneBy(array('email'=>'edit@test.com'));
 
         $crawler = $client->request('POST', '/users/'.$user->getId().'/edit');
         $crawler = $client->submitForm('Modifier', [
-            'user[email]' => $randString,
-            'user[username]' => 'editUser',
+            'user[email]' => 'edit@test.com',
+            'user[username]' => $randString,
+            'user[plainPassword]' => 'abcd1234',
         ]);
 
-        $userTest = $userRepository->findOneBy(array('email'=> $randString));
+        var_dump($randString);
+
+        $userTest = $userRepository->findOneBy(array('username'=> $randString));
 
         $this->assertNotNull($userTest);
     }
 
 
     //Test DOM result of edit action
-    public function testEditAction()
+    public function testEditUserActionDom()
     {
 
         $client = static::createClient();
@@ -105,17 +107,20 @@ class UserControllerTest extends WebTestCase
 
         $userRepository = static::getContainer()->get(UserRepository::class);
 
-        $randString = $this->randString( $userRepository);
+        $randString = $this->randString($userRepository);
 
-        $user = $userRepository->findOneBy(array('username'=>'editUser'));
+        $user = $userRepository->findOneBy(array('email'=>'edit@test.com'));
 
         $crawler = $client->request('POST', '/users/'.$user->getId().'/edit');
         $crawler = $client->submitForm('Modifier', [
-            'user[email]' => $randString,
-            'user[username]' => 'editUser',
+            'user[email]' => 'edit@test.com',
+            'user[username]' => $randString,
+            'user[plainPassword]' => 'abcd1234',
         ]);
 
-        $this->assertCount(1, $crawler->filter($randString));
+        $crawler = $client->followRedirect('user_list');
+        
+        $this->assertSelectorTextContains('td', $randString);
     }
 
     //Test for user manipulation admin restrictions : list
@@ -125,28 +130,24 @@ class UserControllerTest extends WebTestCase
         $client->loginUser($user);
 
         $crawler = $client->request('GET', '/users');
-         
-        $this->assertCount(1, $crawler->filter('.alert-danger'));     
+
+        $this->assertSelectorTextContains('abbr', 'AccessDeniedException'); 
     }
 
     //Test for user manipulation admin restrictions : edit
     public function testAdminRestrictionEdit(){
 
         $client = static::createClient();
-        $user = $this->getUser('user');
-        $client->loginUser($user);
+        $userConnect = $this->getUser('user');
+        $client->loginUser($userConnect);
 
         $userRepository = static::getContainer()->get(UserRepository::class);
 
-        $user = $userRepository->findOneBy(array('email'=>'modify'));
+        $user = $userRepository->findOneBy(array('email'=>'edit@test.com'));
 
         $crawler = $client->request('POST', '/users/'.$user->getId().'/edit');
-        $crawler = $client->submitForm('Modifier', [
-            'user[email]' => 'modify@fake.com',
-            'user[username]' => 'modify',
-        ]);      
 
-        $this->assertCount(1, $crawler->filter('.alert-danger'));
+        $this->assertSelectorTextContains('abbr', 'AccessDeniedException');
     }
 
     //Function providing random strings the does not macth any DB existing entry for test data
@@ -156,14 +157,14 @@ class UserControllerTest extends WebTestCase
         $user = 'notNull';
 
         while($user != null){
-            for ($i = 0; $i < 6; $i++) {
-                $randString = $characters[rand(0, strlen($characters))] . '@fake.com';
+            for ($i = 0; $i <= 6; $i++) {
+                $randString = $randString . $characters[rand(0, strlen($characters))];
             }     
-
-            $user = $repo->findOneBy(array('email' => $randString));     
+            // $randString = $randString . '\@fake\.com';
+            $user = $repo->findOneBy(array('username' => $randString));     
         }
 
-        return $randString;
+        return trim($randString);
     }
 
     protected function getUser($role){

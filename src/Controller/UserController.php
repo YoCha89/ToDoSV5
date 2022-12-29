@@ -53,6 +53,10 @@ class UserController extends AbstractController
                     )
                 );
 
+                $user->setUpdatedAt(new \Datetime());
+                
+                $this->em->persist($user);
+
                 $this->em->flush();
 
                 $this->addFlash('success', "L'utilisateur a bien été modifié");
