@@ -19,6 +19,23 @@ class TaskRepository extends ServiceEntityRepository
         parent::__construct($registry, Task::class);
     }
 
+    //gets the tasks list for listAction
+    public function findAllList(){
+        return $this->createQueryBuilder('t')
+            ->orderBy('t.updatedAt', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    //Used for testing
+    public function findAllOrdered(){
+        return $this->createQueryBuilder('t')
+            ->orderBy('t.id', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getResult();
+    }
+
     // /**
     //  * @return Category[] Returns an array of Category objects
     //  */

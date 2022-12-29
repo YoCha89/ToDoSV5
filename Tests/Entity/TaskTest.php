@@ -7,9 +7,10 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class TaskTest extends KernelTestCase
 {
+
     public function getEntity(): Task {
+
         $task = new Task();
-        
         $task->setTitle('Title of task');
         $task->setContent('Description of task');
 
@@ -18,7 +19,7 @@ class TaskTest extends KernelTestCase
 
     //Called by lour different test functions to validate entity or checking the right error
     public function assertHasErrors(Task $task, int $number = 0) {
-
+        
         self::bootKernel();
         $container = static::getContainer();
         $errors = $container->get('validator')->validate($task);
@@ -34,16 +35,21 @@ class TaskTest extends KernelTestCase
     //Test that a Task that should be valid does not throw erros
     public function testValidEntity()
     {
-        $this->assertHasErrors($this->getEntity(), 0);
+        $entity = $this->getEntity();
+        $this->assertHasErrors($entity, 0);
     }
 
     // Test that an error is thrown by the validator if we set a blank title
     public function testInvalidBlankTitle(){
-        $this->assertHasErrors($this->getEntity()->setTitle(''), 1);
+        $entity = $this->getEntity();
+        $entity->setTitle('');
+        $this->assertHasErrors($entity, 1);
     }
 
     // Test that an error is thrown by the validator if we set a blank content
     public function testInvalidBlankContent(){
-        $this->assertHasErrors($this->getEntity()->setContent(''), 1);
+        $entity = $this->getEntity();
+        $entity->setContent('');
+        $this->assertHasErrors($entity, 1);
     }
 }

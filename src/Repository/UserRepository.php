@@ -60,6 +60,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     public function findAllButAnonymous(){
         return $this->createQueryBuilder('u')
         ->andWhere('u.email != :anonymous')
+        ->orderBy('u.updatedAt', 'DESC')
         ->setParameter(':anonymous', 'anonymous')
         ->getQuery()
         ->getResult();

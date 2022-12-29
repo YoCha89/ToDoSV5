@@ -26,7 +26,7 @@ class TaskController extends AbstractController
      */
     public function listAction()
     {
-        return $this->render('task/list.html.twig', ['tasks' => $this->repo->findAll()]);
+        return $this->render('task/list.html.twig', ['tasks' => $this->repo->findAllList()]);
     }
 
     //Create tasks and checks property constraints
@@ -35,6 +35,7 @@ class TaskController extends AbstractController
      */
     public function createAction(Request $request)
     {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
 
         $task = new Task();
         $form = $this->createForm(TaskType::class, $task);
@@ -68,6 +69,8 @@ class TaskController extends AbstractController
      */
     public function editAction(Task $task, Request $request)
     {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+
         if($task->getUser()->getUsername() != 'anonymous' && $task->getUser() == $this->getUser()){
             $go = '';
         }elseif($this->isGranted('ROLE_ADMIN')){
@@ -80,6 +83,10 @@ class TaskController extends AbstractController
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
+
+                $task->setUpdatedAt(new \Datetime());
+
+                $this->em->persist($task);
                 $this->em->flush();
 
                 $this->addFlash('success', 'La tâche a bien été modifiée.');
@@ -105,6 +112,8 @@ class TaskController extends AbstractController
      */
     public function toggleTaskAction(Task $task)
     {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+
         if($task->getUser()->getUsername() != 'anonymous' && $task->getUser() == $this->getUser()){
             $go = '';
         }elseif($this->isGranted('ROLE_ADMIN')){
@@ -133,6 +142,8 @@ class TaskController extends AbstractController
      */
     public function deleteTaskAction(Task $task)
     {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        
         if($task->getUser()->getUsername() != 'anonymous' && $task->getUser() == $this->getUser()){
             $go = '';
         }elseif($this->isGranted('ROLE_ADMIN')){
