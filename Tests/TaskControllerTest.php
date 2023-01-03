@@ -269,9 +269,9 @@ class TaskControllerTest extends WebTestCase
         $taskRepository = static::getContainer()->get(TaskRepository::class); 
         $task = $taskRepository->findOneBy(array('title'=>'Test Ownership'));
 
-        $crawler = $client->request('GET', '/tasks/'.$task->getId().'/edit');
-        $client->followRedirect('task_list');
-        // dd($client->getResponse()->getContent());
+        $client->request('GET', '/tasks/'.$task->getId().'/edit');
+        $crawler = $client->followRedirect('task_list');
+        
         $this->assertCount(1, $crawler->filter('.alert-danger'));
     } 
 
@@ -287,13 +287,9 @@ class TaskControllerTest extends WebTestCase
         $taskRepository = static::getContainer()->get(TaskRepository::class); 
         $task = $taskRepository->findOneBy(array('content'=>'Test Anonymous'));
 
-        $crawler = $client->request('GET', '/tasks/'.$task->getId().'/edit');
-        $crawler = $client->submitForm('Modifier', [
-            'task[title]' => 'Anonymous',
-            'task[content]' => 'Test Anonymous',
-        ]);
-        $client->followRedirect('task_list');
+        $client->request('GET', '/tasks/'.$task->getId().'/edit');
 
+        $crawler = $client->followRedirect('task_list');
         $this->assertCount(1, $crawler->filter('.alert-danger'));
     } 
 
@@ -307,11 +303,11 @@ class TaskControllerTest extends WebTestCase
         $client->loginUser($user);
 
         $taskRepository = static::getContainer()->get(TaskRepository::class);
-        $task = $taskRepository->findOneBy(array('content'=>'Test Ownership'));
+        $task = $taskRepository->findOneBy(array('title'=>'Test Ownership'));
 
-        $crawler = $client->request('GET', '/tasks/'. $task->getId() .'/task_toggle');
+        $client->request('GET', '/tasks/'. $task->getId() .'/toggle');
 
-        $client->followRedirect('task_list');
+        $crawler =  $client->followRedirect('task_list');
         $this->assertCount(1, $crawler->filter('.alert-danger'));
     } 
 
@@ -327,9 +323,9 @@ class TaskControllerTest extends WebTestCase
         $taskRepository = static::getContainer()->get(TaskRepository::class);
         $task = $taskRepository->findOneBy(array('content'=>'Test Anonymous'));
 
-        $crawler = $client->request('GET', '/tasks/'. $task->getId() .'/task_toggle');
+        $client->request('GET', '/tasks/'. $task->getId() .'/toggle');
         
-        $client->followRedirect('task_list');
+        $crawler = $client->followRedirect('task_list');
         $this->assertCount(1, $crawler->filter('.alert-danger'));
     }
 
