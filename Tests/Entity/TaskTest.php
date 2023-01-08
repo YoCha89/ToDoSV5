@@ -17,7 +17,7 @@ class TaskTest extends KernelTestCase
         return $task;
     }
 
-    //Called by lour different test functions to validate entity or checking the right error
+    /*Called by lour different test functions to validate entity or checking the right error*/
     public function assertHasErrors(Task $task, int $number = 0) {
         
         self::bootKernel();
@@ -32,21 +32,21 @@ class TaskTest extends KernelTestCase
         $this->assertCount($number, $errors, implode(', ', $messages));
     }
 
-    //Test that a Task that should be valid does not throw erros
+    /*Test that a Task that should be valid does not throw erros*/
     public function testValidEntity()
     {
         $entity = $this->getEntity();
         $this->assertHasErrors($entity, 0);
     }
 
-    // Test that an error is thrown by the validator if we set a blank title
+    /* Test that an error is thrown by the validator if we set a blank title*/
     public function testInvalidBlankTitle(){
         $entity = $this->getEntity();
         $entity->setTitle('');
         $this->assertHasErrors($entity, 1);
     }
 
-    // Test that an error is thrown by the validator if we set a blank content
+    /* Test that an error is thrown by the validator if we set a blank content*/
     public function testInvalidBlankContent(){
         $entity = $this->getEntity();
         $entity->setContent('');

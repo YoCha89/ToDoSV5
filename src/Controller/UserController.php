@@ -18,7 +18,7 @@ class UserController extends AbstractController
 
     }
     
-    //Access to users
+    /*Access to users*/
     /**
      * @Route("/users", name="user_list")
      */
@@ -33,7 +33,7 @@ class UserController extends AbstractController
         
     }
 
-    //update users and checks property constraints. Admin has all the rights, non admin users must own the task.
+    /*update users and checks property constraints. Admin has all the rights, non admin users must own the task.*/
     /**
      * @Route("/users/{id}/edit", name="user_edit")
      */
