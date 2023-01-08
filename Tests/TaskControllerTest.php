@@ -8,15 +8,15 @@ use App\Repository\UserRepository;
 
 class TaskControllerTest extends WebTestCase
 {
-   //Test response code of list action
+   /*Test response code of list action*/
     public function testListTaskActionSuccess() {
         $client = static::createClient();
-        $crawler = $client->request('GET', '/tasks');
+        $client->request('GET', '/tasks');
 
         $this->assertResponseIsSuccessful();
     }
 
-    //Test DOM result of list action
+   /*Test DOM result of list action*/
     public function testListTaskActionDom() {
 
         $client = static::createClient();
@@ -33,24 +33,24 @@ class TaskControllerTest extends WebTestCase
         $this->assertCount($taskList[0][1], $crawler->filter('.caption'));
     }
 
-//Test response code create action
+ /*Test response code create action*/
    public function testCreateActionSuccess()
     {          
         $client = static::createClient();
         $user = $this->getUser('user');
         $client->loginUser($user);
-        $crawler = $client->request('POST', '/tasks/create');
+        $client->request('POST', '/tasks/create');
 
-        $crawler = $client->submitForm('Ajouter', [
+        $client->submitForm('Ajouter', [
             'task[title]' => 'TestTitle',
             'task[content]' => 'Test create',
         ]);
 
-        $crawler = $client->followRedirect('task_list');
+        $client->followRedirect('task_list');
         $this->assertResponseIsSuccessful();
     }    
 
-    //Test DB result of create action
+    /*Test DB result of create action*/
     public function testCreateActionDB()
     {          
         $client = static::createClient();
@@ -74,7 +74,7 @@ class TaskControllerTest extends WebTestCase
         $this->assertEquals($testId1[0]->getId(), $testId2->getId());
     }
 
-    //Test DOM result of create action
+    /*Test DOM result of create action*/
     public function testCreateActionDom()
     {          
 
@@ -96,7 +96,7 @@ class TaskControllerTest extends WebTestCase
         $this->assertSelectorTextContains('h4', $randString);
     }
 
-    //Test response code edit action 
+    /*Test response code edit action*/ 
     public function testEditTaskActionSuccess()
     {   
         $client = static::createClient();
@@ -107,19 +107,18 @@ class TaskControllerTest extends WebTestCase
 
         $task = $taskRepository->findOneBy(array('content'=>'Test success'));
 
-        $crawler = $client->request('POST', '/tasks/'.$task->getId().'/edit');
-        // dd($crawler);
-        $crawler = $client->submitForm('Modifier', [
+        $client->request('POST', '/tasks/'.$task->getId().'/edit');
+        $client->submitForm('Modifier', [
             'task[title]' => 'Test success',
             'task[content]' => 'Test success',
         ]);
 
-        $crawler = $client->followRedirect('task_list');
+        $client->followRedirect('task_list');
         $this->assertResponseIsSuccessful();
     }
 
 
-    //Test DB result of edit action
+   /* Test DB result of edit action*/
     public function testEditTaskActionDB()
     {   
         $client = static::createClient();
@@ -144,7 +143,7 @@ class TaskControllerTest extends WebTestCase
         $this->assertNotNull($taskTest);
     }
 
-    //Test DOM result of edit action
+    /*Test DOM result of edit action*/
     public function testEditTaskActionDom()
     {   
 
@@ -157,20 +156,20 @@ class TaskControllerTest extends WebTestCase
 
         $task = $taskRepository->findOneBy(array('content'=>'Test DOM'));
 
-        $crawler = $client->request('POST', '/tasks/'.$task->getId().'/edit');
+        $client->request('POST', '/tasks/'.$task->getId().'/edit');
 
         $randString = $this->randString($taskRepository);
 
-        $crawler = $client->submitForm('Modifier', [
+        $client->submitForm('Modifier', [
             'task[title]' => $randString,
             'task[content]' => 'Test DOM',
         ]);
 
-        $crawler = $client->followRedirect('task_list');
+        $client->followRedirect('task_list');
         $this->assertSelectorTextContains('h4', $randString);
     }
 
-    //Test response code toggle action
+    /*Test response code toggle action*/
     public function testToggleTaskActionSuccess()
     {
         
@@ -182,13 +181,13 @@ class TaskControllerTest extends WebTestCase
         $taskRepository = static::getContainer()->get(TaskRepository::class);
 
         $task = $taskRepository->findOneBy(array('content'=>'Test toggle'));
-        $crawler = $client->request('GET', '/tasks/'. $task->getId() .'/toggle');
+        $client->request('GET', '/tasks/'. $task->getId() .'/toggle');
 
-        $crawler = $client->followRedirect('task_list');
+        $client->followRedirect('task_list');
         $this->assertResponseIsSuccessful();
     }
 
-    //Test DB result toggle action
+    /*Test DB result toggle action*/
     public function testToggleTaskActionDB()
     {
 
@@ -208,7 +207,7 @@ class TaskControllerTest extends WebTestCase
             $assert = true;
         }
 
-        $crawler = $client->request('GET', '/tasks/'. $task->getId() .'/toggle');
+        $client->request('GET', '/tasks/'. $task->getId() .'/toggle');
 
         if($assert == false){
             $this->assertFalse($task->isDone());
@@ -217,7 +216,7 @@ class TaskControllerTest extends WebTestCase
         }
     }
 
-    //Test DOM result of toggle action
+    /*Test DOM result of toggle action*/
     public function testToggleTaskActionDom()
     {
         
@@ -251,16 +250,15 @@ class TaskControllerTest extends WebTestCase
             $assertHtml = $taskDone[0][1]+1;
         }
 
-        $crawler = $client->request('GET', '/tasks/'. $task->getId() .'/toggle');
+        $client->request('GET', '/tasks/'. $task->getId() .'/toggle');
 
         $crawler = $client->followRedirect('task_list');
         $this->assertCount($assertHtml, $crawler->filter($glyphycon));
     }
 
-    //Test property violation of edit action
+    /*Test property violation of edit action*/
     public function testPropertyViolationEdit(){
 
-        //connection profil pas valide
         $client = static::createClient();
         
         $user = $this->getUser('notOwner');
@@ -275,10 +273,9 @@ class TaskControllerTest extends WebTestCase
         $this->assertCount(1, $crawler->filter('.alert-danger'));
     } 
 
-    //Test property violation of edit action for admin role
+    /*Test property violation of edit action for admin role*/
     public function testAdminViolationEdit(){
 
-        //connection profil pas valide
         $client = static::createClient();
         
         $user = $this->getUser('user');
@@ -293,10 +290,9 @@ class TaskControllerTest extends WebTestCase
         $this->assertCount(1, $crawler->filter('.alert-danger'));
     } 
 
-    //Test property violation of toggle action
+   /* Test property violation of toggle action*/
     public function testPropertyViolationToggle(){
 
-        //connection profil pas valide
         $client = static::createClient();
         
         $user = $this->getUser('notOwner');
@@ -311,10 +307,9 @@ class TaskControllerTest extends WebTestCase
         $this->assertCount(1, $crawler->filter('.alert-danger'));
     } 
 
-    //Test property violation of toggle action for admin role
+    /*Test property violation of toggle action for admin role*/
     public function testAdminViolationToggle(){
 
-        //connection profil pas valide
         $client = static::createClient();
         
         $user = $this->getUser('user');
@@ -329,7 +324,7 @@ class TaskControllerTest extends WebTestCase
         $this->assertCount(1, $crawler->filter('.alert-danger'));
     }
 
-    //Function providing random strings the does not macth any DB existing entry for test data
+   /* Function providing random strings the does not macth any DB existing entry for test data*/
     protected function randString($repo){
         $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $randString = 'test';
@@ -339,13 +334,14 @@ class TaskControllerTest extends WebTestCase
             for ($i = 0; $i <= 6; $i++) {
                 $randString = $randString . $characters[rand(0, strlen($characters)-1)];
             }     
-            // $randString = $randString . '\@fake\.com';
+             $randString = $randString . '\@fake\.com';
             $task = $repo->findOneBy(array('content' => $randString));     
         }
 
         return trim($randString);
     }
 
+    /*provides the right user for the test*/
     protected function getUser($role){
 
         $userRepository = static::getContainer()->get(UserRepository::class);

@@ -9,18 +9,18 @@ use Symfony\Component\HttpKernel\Exception\InvalidArgumentException;
 
 class UserControllerTest extends WebTestCase {
 
-//Test response code of list action
+/*Test response code of list action*/
     public function testListUserActionSuccess() {
         $client = static::createClient();
         $user = $this->getUser('admin');
         $client->loginUser($user);
 
-        $crawler = $client->request('GET', '/users');
+        $client->request('GET', '/users');
 
         $this->assertResponseIsSuccessful();
     }
 
-//Test DOM result of list action
+/*Test DOM result of list action*/
     public function testListUserAction() {
 
         $client = static::createClient();
@@ -39,12 +39,11 @@ class UserControllerTest extends WebTestCase {
             ->getQuery()
             ->getResult();
 
-        //adapter balise CSS
         $this->assertCount($userList[0][1], $crawler->filter('.btn-success'));
     }
 
 
-    //Test response code of edit action
+    /*Test response code of edit action*/
     public function testEditUserActionSuccess()
     {
 
@@ -56,8 +55,8 @@ class UserControllerTest extends WebTestCase {
 
         $user = $userRepository->findOneBy(array('email'=>'edit@test.com'));
 
-        $crawler = $client->request('POST', '/users/'.$user->getId().'/edit');
-        $crawler = $client->submitForm('Modifier', [
+        $client->request('POST', '/users/'.$user->getId().'/edit');
+        $client->submitForm('Modifier', [
             'user[email]' => 'edit@test.com',
             'user[username]' => 'editUser',
         ]);
@@ -66,7 +65,7 @@ class UserControllerTest extends WebTestCase {
     }
 
 
-    //Test DB result of edit action
+   /* Test DB result of edit action*/
     public function testEditUserActionDb()
     {
 
@@ -81,14 +80,12 @@ class UserControllerTest extends WebTestCase {
 
         $user = $userRepository->findOneBy(array('email'=>'edit@test.com'));
 
-        $crawler = $client->request('POST', '/users/'.$user->getId().'/edit');
-        $crawler = $client->submitForm('Modifier', [
+        $client->request('POST', '/users/'.$user->getId().'/edit');
+        $client->submitForm('Modifier', [
             'user[email]' => 'edit@test.com',
             'user[username]' => $randString,
             'user[plainPassword]' => 'abcd1234',
         ]);
-
-        var_dump($randString);
 
         $userTest = $userRepository->findOneBy(array('username'=> $randString));
 
@@ -96,7 +93,7 @@ class UserControllerTest extends WebTestCase {
     }
 
 
-    //Test DOM result of edit action
+   /* Test DOM result of edit action*/
     public function testEditUserActionDom()
     {
 
@@ -111,30 +108,30 @@ class UserControllerTest extends WebTestCase {
 
         $user = $userRepository->findOneBy(array('email'=>'edit@test.com'));
 
-        $crawler = $client->request('POST', '/users/'.$user->getId().'/edit');
-        $crawler = $client->submitForm('Modifier', [
+        $client->request('POST', '/users/'.$user->getId().'/edit');
+        $client->submitForm('Modifier', [
             'user[email]' => 'edit@test.com',
             'user[username]' => $randString,
             'user[plainPassword]' => 'abcd1234',
         ]);
 
-        $crawler = $client->followRedirect('user_list');
+        $client->followRedirect('user_list');
         
         $this->assertSelectorTextContains('td', $randString);
     }
 
-    //Test for user manipulation admin restrictions : list
+    /*Test for user manipulation admin restrictions : list*/
     public function testAdminRestrictionList(){
         $client = static::createClient();
         $user = $this->getUser('user');
         $client->loginUser($user);
 
-        $crawler = $client->request('GET', '/users');
+        $client->request('GET', '/users');
 
         $this->assertSelectorTextContains('abbr', 'AccessDeniedException'); 
     }
 
-    //Test for user manipulation admin restrictions : edit
+    /*Test for user manipulation admin restrictions : edit*/
     public function testAdminRestrictionEdit(){
 
         $client = static::createClient();
@@ -145,12 +142,12 @@ class UserControllerTest extends WebTestCase {
 
         $user = $userRepository->findOneBy(array('email'=>'edit@test.com'));
 
-        $crawler = $client->request('POST', '/users/'.$user->getId().'/edit');
+        $client->request('POST', '/users/'.$user->getId().'/edit');
 
         $this->assertSelectorTextContains('abbr', 'AccessDeniedException');
     }
 
-    //Function providing random strings the does not macth any DB existing entry for test data
+    /*Function providing random strings the does not macth any DB existing entry for test data*/
     protected function randString($repo){
         $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $randString = '';
@@ -160,13 +157,14 @@ class UserControllerTest extends WebTestCase {
             for ($i = 0; $i <= 6; $i++) {
                 $randString = $randString . $characters[rand(0, strlen($characters))];
             }     
-            // $randString = $randString . '\@fake\.com';
+             $randString = $randString . '\@fake\.com';
             $user = $repo->findOneBy(array('username' => $randString));     
         }
 
         return trim($randString);
     }
 
+    /*provides the right user for the test*/
     protected function getUser($role){
 
         

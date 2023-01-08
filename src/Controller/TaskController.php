@@ -20,7 +20,7 @@ class TaskController extends AbstractController
         
     }
 
-    //Access to tasks
+    /*Access to tasks*/
     /**
      * @Route("/tasks", name="task_list")
      */
@@ -29,7 +29,7 @@ class TaskController extends AbstractController
         return $this->render('task/list.html.twig', ['tasks' => $this->repo->findAllList()]);
     }
 
-    //Create tasks and checks property constraints
+    /*Create tasks and checks property constraints*/
     /**
      * @Route("/tasks/create", name="task_create")
      */
@@ -63,7 +63,7 @@ class TaskController extends AbstractController
 
     }
 
-    //update tasks and checks property constraints. Admin has all the rights, non admin users must own the task.
+    /*update tasks and checks property constraints. Admin has all the rights, non admin users must own the task.*/
     /**
      * @Route("/tasks/{id}/edit", name="task_edit")
      */
@@ -106,7 +106,7 @@ class TaskController extends AbstractController
     
     }
 
-    //toggle tasks executionand checks property constraints.  Admin has all the rights, non admin users must own the task.
+    /*toggle tasks executionand checks property constraints.  Admin has all the rights, non admin users must own the task.*/
     /**
      * @Route("/tasks/{id}/toggle", name="task_toggle")
      */
@@ -136,7 +136,7 @@ class TaskController extends AbstractController
         }
     }
 
-    //delete tasks and checks property constraints.  Admin has all the rights, non admin users must own the task.
+    /*delete tasks and checks property constraints.  Admin has all the rights, non admin users must own the task.*/
     /**
      * @Route("/tasks/{id}/delete", name="task_delete")
      */
