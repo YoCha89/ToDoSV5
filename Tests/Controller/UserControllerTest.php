@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests;
+namespace App\Controller\Tests;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use App\Repository\UserRepository;
@@ -155,7 +155,7 @@ class UserControllerTest extends WebTestCase {
 
         while($user != null){
             for ($i = 0; $i <= 6; $i++) {
-                $randString = $randString . $characters[rand(0, strlen($characters))];
+                $randString = $randString . $characters[rand(0, strlen($characters)-1)];
             }     
              $randString = $randString . '\@fake\.com';
             $user = $repo->findOneBy(array('username' => $randString));     

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests;
+namespace App\Controller\Tests;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use App\Repository\TaskRepository;

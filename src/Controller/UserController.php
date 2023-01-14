@@ -24,50 +24,38 @@ class UserController extends AbstractController
      */
     public function listAction()
     {
-        if($this->isGranted('ROLE_ADMIN')){
-            return $this->render('user/list.html.twig', ['users' => $this->repo->findAllButAnonymous()]);
-        }else{
-            $this->addFlash('error', 'Seul un administrateur peut accéder aux utilisateurs.');
-            return $this->redirectToRoute('task_list');
-        } 
-        
+        return $this->render('user/list.html.twig', ['users' => $this->repo->findAllButAnonymous()]);
     }
 
     /*update users and checks property constraints. Admin has all the rights, non admin users must own the task.*/
     /**
      * @Route("/users/{id}/edit", name="user_edit")
      */
-    public function editAction(User $user, Request $request, UserPasswordHasherInterface $userPasswordHasher)
-    {
-        if($this->isGranted('ROLE_ADMIN')){
-            $form = $this->createForm(UserType::class, $user);
+    public function editAction(User $user, Request $request, UserPasswordHasherInterface $userPasswordHasher) {
+        $form = $this->createForm(UserType::class, $user);
 
-            $form->handleRequest($request);
+        $form->handleRequest($request);
 
-            if ($form->isSubmitted() && $form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
 
-                $user->setPassword(
-                    $userPasswordHasher->hashPassword(
-                        $user,
-                        $form->get('plainPassword')->getData()
-                    )
-                );
+            $user->setPassword(
+                $userPasswordHasher->hashPassword(
+                    $user,
+                    $form->get('plainPassword')->getData()
+                )
+            );
 
-                $user->setUpdatedAt(new \Datetime());
-                
-                $this->em->persist($user);
+            $user->setUpdatedAt(new \Datetime());
+            
+            $this->em->persist($user);
 
-                $this->em->flush();
+            $this->em->flush();
 
-                $this->addFlash('success', "L'utilisateur a bien été modifié");
+            $this->addFlash('success', "L'utilisateur a bien été modifié");
 
-                return $this->redirectToRoute('user_list');
-            }
+            return $this->redirectToRoute('user_list');
+        }
 
-            return $this->render('user/edit.html.twig', ['form' => $form->createView(), 'user' => $user]);            
-        }else{
-            $this->addFlash('error', 'Seul un administrateur mettre à jour un utilisateur.');
-            return $this->redirectToRoute('task_list');
-        } 
+        return $this->render('user/edit.html.twig', ['form' => $form->createView(), 'user' => $user]);
     }
 }
