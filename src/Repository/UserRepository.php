@@ -31,7 +31,14 @@ class UserRepository extends ServiceEntityRepository
         ->getResult();
     }
 
-
+    //Used for testing
+    public function findAllOrdered(){
+        return $this->createQueryBuilder('u')
+            ->orderBy('u.id', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getResult();
+    }
 //    /**
 //     * @return User[] Returns an array of User objects
 //     */

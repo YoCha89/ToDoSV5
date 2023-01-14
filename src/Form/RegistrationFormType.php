@@ -41,11 +41,6 @@ class RegistrationFormType extends AbstractType
             ->add('admin', CheckboxType::class, [
                 'mapped' => false,
                 'required' => false,
-                'constraints' => [
-                    new IsTrue([
-                        'message' => 'L\'utilisateur est-il un adinistrateur ?.',
-                    ]),
-                ],
             ])
         ;    
     }
