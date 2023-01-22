@@ -56,14 +56,14 @@ class TaskControllerTest extends WebTestCase
         $client = static::createClient();
         $user = $this->getUser('user');
         $client->loginUser($user);
-        $crawler = $client->request('POST', '/tasks/create');
+        $client->request('POST', '/tasks/create');
 
 
         $taskRepository = static::getContainer()->get(TaskRepository::class);  
 
         $randString = $this->randString($taskRepository);
 
-        $crawler = $client->submitForm('Ajouter', [
+        $client->submitForm('Ajouter', [
             'task[title]' =>  $randString,
             'task[content]' =>'Test create',
         ]);
