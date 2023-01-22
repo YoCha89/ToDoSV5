@@ -23,7 +23,7 @@ class DefaultControllerTest extends WebTestCase {
 
         $client = static::createClient();
 
-        $crawler = $client->request('GET', '/');
+        $client->request('GET', '/');
 
         $this->assertSelectorTextContains('h1', 'Bienvenue sur Todo List, l\'application vous permettant de gérer l\'ensemble de vos tâches sans effort !');
     }

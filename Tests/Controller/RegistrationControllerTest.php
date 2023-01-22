@@ -16,11 +16,9 @@ class TRegistrationControllerTest extends WebTestCase {
         $user = $this->getUser('admin');
         $client->loginUser($user);
 
-        $userRepository = static::getContainer()->get(UserRepository::class);
-
         $client->request('POST', '/register');
 
-        $crawler = $client->submitForm('Register', [
+        $client->submitForm('Register', [
             'registration_form[email]' =>  'test@register.fr',
             'registration_form[username]' =>'registerNew',
             'registration_form[plainPassword]' =>'Test1234register',
