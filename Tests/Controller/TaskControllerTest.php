@@ -82,17 +82,17 @@ class TaskControllerTest extends WebTestCase
         
         $user = $this->getUser('user');
         $client->loginUser($user);
-        $crawler = $client->request('POST', '/tasks/create');
+        $client->request('POST', '/tasks/create');
 
         $taskRepository = static::getContainer()->get(TaskRepository::class); 
         $randString = $this->randString($taskRepository);  
 
-        $crawler = $client->submitForm('Ajouter', [
+        $client->submitForm('Ajouter', [
             'task[title]' => $randString,
             'task[content]' => 'Test create',
         ]);
 
-        $crawler = $client->followRedirect('task_list');
+        $client->followRedirect('task_list');
         $this->assertSelectorTextContains('h4', $randString);
     }
 
@@ -128,16 +128,16 @@ class TaskControllerTest extends WebTestCase
         $taskRepository = static::getContainer()->get(TaskRepository::class); 
 
         $task = $taskRepository->findOneBy(array('title'=>'Test db'));
-        $crawler = $client->request('POST', '/tasks/'.$task->getId().'/edit');
+        $client->request('POST', '/tasks/'.$task->getId().'/edit');
 
         $randString = $this->randString($taskRepository);
 
-        $crawler = $client->submitForm('Modifier', [
+        $client->submitForm('Modifier', [
             'task[title]' => 'Test db',
             'task[content]' => $randString,
         ]);
 
-        $crawler = $client->followRedirect('task_list');
+        $client->followRedirect('task_list');
         $taskTest = $taskRepository->findOneBy(array('content'=>$randString));
 
         $this->assertNotNull($taskTest);
@@ -219,7 +219,6 @@ class TaskControllerTest extends WebTestCase
     /*Test DOM result of toggle action*/
     public function testToggleTaskActionDom()
     {
-        
         $client = static::createClient();
         
         $user = $this->getUser('user');
@@ -249,7 +248,7 @@ class TaskControllerTest extends WebTestCase
             $glyphycon = '.glyphicon-ok';
             $assertHtml = $taskDone[0][1]+1;
         }
-
+        
         $client->request('GET', '/tasks/'. $task->getId() .'/toggle');
 
         $crawler = $client->followRedirect('task_list');
