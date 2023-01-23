@@ -41,7 +41,7 @@ class TRegistrationControllerTest extends WebTestCase {
 
         $client->request('GET', '/register');
 
-        $crawler = $client->submitForm('Register', [
+        $client->submitForm('Register', [
             'registration_form[email]' =>  'test@register.fr',
             'registration_form[username]' =>'registerNew',
             'registration_form[plainPassword]' =>'Test1234register',

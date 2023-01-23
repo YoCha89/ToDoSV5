@@ -146,8 +146,6 @@ class TaskController extends AbstractController
         
         if($task->getUser()->getUsername() != 'anonymous' && $task->getUser() == $this->getUser()){
             $go = '';
-        }elseif($this->isGranted('ROLE_ADMIN')){
-            $go = '';
         }
 
         if(isset($go)){
@@ -158,7 +156,7 @@ class TaskController extends AbstractController
 
             return $this->redirectToRoute('task_list');
         }else{
-            $this->addFlash('error', 'Seul l\'utilisateur dédié ou un administrateur peut supprimer une tâche.');
+            $this->addFlash('error', 'Seul l\'utilisateur dédié peut supprimer une tâche.');
         } 
     }
 }
