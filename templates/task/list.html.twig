@@ -9,6 +9,7 @@
 
     <div class="row">
         {% for task in tasks %}
+        {% set go = 'noRights' %}
         <div class="col-sm-4 col-lg-4 col-md-4">
             <div class="thumbnail">
                 <div class="caption">
@@ -30,13 +31,15 @@
                     <p>{{ task.content }}</p>
                 </div>
 
-                {% if task.user.username != 'anonymous' and task.user == app.user%}
-                    {% set go = true %}
+                {% if task.user == app.user%}
+                    {% set go = 'owner' %}
+                {% elseif is_granted('ROLE_ADMIN') and task.user.username == 'anonymous' %}
+                        {% set go = 'owner' %}
                 {% elseif is_granted('ROLE_ADMIN') %}
-                        {% set go = true %}
+                    {% set go = 'admin' %}
                 {% endif %}
 
-                {% if go is defined%}
+                {% if go == 'owner'%}
                     <div>
                         <form action="{{ path('task_toggle', {'id' : task.id }) }}">
                             <button class="btn btn-success btn-sm pull-right">
@@ -45,6 +48,14 @@
                         </form>
                         <form action="{{ path('task_delete', {'id' : task.id }) }}">
                             <button class="btn btn-danger btn-sm pull-right">Supprimer</button>
+                        </form>
+                    </div>
+                {% elseif go == 'admin'%}
+                    <div>
+                        <form action="{{ path('task_toggle', {'id' : task.id }) }}">
+                            <button class="btn btn-success btn-sm pull-right">
+                                {% if not task.isDone %}Marquer comme faite{% else %}Marquer non terminée{% endif %}
+                            </button>
                         </form>
                     </div>
                 {% endif %}
