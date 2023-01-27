@@ -144,7 +144,7 @@ class TaskController extends AbstractController
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
         
-        if($task->getUser()->getUsername() != 'anonymous' && $task->getUser() == $this->getUser()){
+        if($task->getUser() == $this->getUser()){
             $go = '';
         }
 

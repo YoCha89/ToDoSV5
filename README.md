@@ -34,6 +34,8 @@ Installing the app<br/>
     <li>To run the test battery, run "php bin/phpunit" throught your CLI</li>
 </ol>
 
+DEVELOPPER'S GUIDELINES : You'll find a set of good practice for your developpers to follow at this link : https://github.com/YoCha89/ToDoSV5/blob/master/Documentation_developper_guidelines.pdf. They will ensure the best quality and performance of your code as well as a simplified collaboration between developpers. 
+
 © 2022 GitHub, Inc.
 Terms
 Privacy
